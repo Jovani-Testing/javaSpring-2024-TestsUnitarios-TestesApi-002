@@ -4,6 +4,7 @@ import com.jotech.UsuarioDepartamento.controllers.UserController;
 import com.jotech.UsuarioDepartamento.entities.User;
 import com.jotech.UsuarioDepartamento.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,25 +17,16 @@ public class PessoaService {
   private UserRepository repository;
 
   public User createUser(User user) {
-
-    if (user.getName() == null || user.getName().trim().isEmpty()) {
-      throw new IllegalArgumentException("O campo 'nome' não pode ser nulo ou vazio.");
+    if (user.getName() == null || user.getName().trim().isEmpty()) {throw new IllegalArgumentException("O campo 'nome' não pode ser nulo ou vazio.");
     }
-
-    if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
-      throw new IllegalArgumentException("O campo 'e-mail' não pode ser nulo ou vazio.");
+    if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {throw new IllegalArgumentException("O campo 'e-mail' não pode ser nulo ou vazio.");
     }
-
-    if (user.getDepartment() == null) {
-      throw new IllegalArgumentException("O campo 'departamento' não pode ser nulo.");
+    if (user.getDepartment() == null) {throw new IllegalArgumentException("O campo 'departamento' não pode ser nulo.");
     }
-
     Long idDepartamento = user.getDepartment().getIdDepartamento();
-    if (idDepartamento == null) {
-      throw new IllegalArgumentException("O campo 'idDepartamento' não pode ser nulo.");
+    if (idDepartamento == null) {throw new IllegalArgumentException("O campo 'idDepartamento' não pode ser nulo.");
     }
-    if (idDepartamento != 1 && idDepartamento != 2) {
-      throw new IllegalArgumentException("O campo 'idDepartamento' deve ser 1 ou 2.");
+    if (idDepartamento != 1 && idDepartamento != 2) {throw new IllegalArgumentException("O campo 'idDepartamento' deve ser 1 ou 2.");
     }
     return repository.save(user);
   }
@@ -42,12 +34,32 @@ public class PessoaService {
   public User getUserById(Long id) {
     if (id == null) {
       throw new IllegalArgumentException("O ID não pode ser nulo.");
-    }
-    return repository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Usuário com ID " + id + " não encontrado."));
-  }
+    }return repository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Usuário com ID " + id + " não encontrado."));}
   public List<User> findAll() {
     return repository.findAll();
+  }
+  public User updateUser(Long id, User user) {
+    if (id == null) {
+      throw new IllegalArgumentException("O ID não pode ser nulo.");
+    }
+    User existingUser = repository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Usuário com ID " + id + " não encontrado."));
+    existingUser.setName(user.getName());
+    existingUser.setEmail(user.getEmail());
+    existingUser.setDepartment(user.getDepartment());
+    return repository.save(existingUser);
+  }
+  public void deleteUser(Long id) {
+    if (id == null) {
+      throw new IllegalArgumentException("O ID não pode ser nulo.");
+    }
+
+    if (!repository.existsById(id)) {
+      throw new IllegalArgumentException("Usuário com ID " + id + " não encontrado.");
+    }
+
+    repository.deleteById(id);
   }
 }
 

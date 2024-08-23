@@ -26,13 +26,27 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+
     @GetMapping
     public ResponseEntity<List<User>> findAll () {
         List<User> users = pessoaService.findAll();
         return ResponseEntity.ok(users);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+        User updatedUser = pessoaService.updateUser(id, user);
+        return ResponseEntity.ok(updatedUser);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        pessoaService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
+
+
 //    @PutMapping(value = "/{id}")
 //    public User updateUser(@PathVariable Long id, @RequestBody User userUpdate) {
 //        User existingUser = repository.findById(id).orElse(null);
